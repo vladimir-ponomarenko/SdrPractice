@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/pluto_sdr/Загрузки/ia-231/sdr/build",
+  "command": "/usr/bin/clang++-14   -g -o CMakeFiles/main.dir/src/main.cpp.o -c /home/pluto_sdr/Загрузки/ia-231/sdr/sdrLessons/src/main.cpp",
+  "file": "/home/pluto_sdr/Загрузки/ia-231/sdr/sdrLessons/src/main.cpp"
+}
+]
