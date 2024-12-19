@@ -31,21 +31,21 @@ b = np.ones(int(ns))
 x=np.reshape(m,(2,128))
 xi=x[0,:]
 xq=x[1,:]
-x_bb=(xi+1j*xq)/np.sqrt(2) * 2 ** 8
+x_bb=(xi+1j*xq)/np.sqrt(2) * 2 ** 7
 plt.figure(1)
 plt.scatter(x_bb.real,x_bb.imag)
 plt.show()
-x_bb_repeat = np.repeat(x_bb, 10)
-with open('/home/pluto_sdr/Загрузки/ia-231/sdr/sdrLessons/myfile.h', 'w') as file:
+
+with open('sdrLessons/src/myfile.h', 'w') as file:
     file.write("#ifndef MYFILE_H\n")
     file.write("#define MYFILE_H\n\n")
     
     file.write("const double x_bb_real[] = {")
-    file.write(', '.join(map(str, x_bb_repeat.real)))
+    file.write(', '.join(map(str, x_bb.real)))
     file.write("};\n")
     
     file.write("const double x_bb_imag[] = {")
-    file.write(', '.join(map(str, x_bb_repeat.imag)))
+    file.write(', '.join(map(str, x_bb.imag)))
     file.write("};\n\n")
     
     file.write("#endif // MYFILE_H\n")

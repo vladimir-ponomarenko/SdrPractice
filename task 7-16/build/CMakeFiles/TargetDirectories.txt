@@ -1,3 +1,0 @@
-/home/pluto_sdr/Загрузки/ia-231/sdr/build/CMakeFiles/main.dir
-/home/pluto_sdr/Загрузки/ia-231/sdr/build/CMakeFiles/edit_cache.dir
-/home/pluto_sdr/Загрузки/ia-231/sdr/build/CMakeFiles/rebuild_cache.dir

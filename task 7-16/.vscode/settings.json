@@ -3,6 +3,5 @@
         "fstream": "cpp",
         "iostream": "cpp",
         "*.tcc": "cpp"
-    },
-    "cmake.sourceDirectory": "/home/pluto_sdr/Загрузки/ia-231/sdr/sdrLessons"
+    }
 }
