@@ -2,18 +2,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-with open('sdrLessons/src/rx_data.txt', 'r') as file:
+with open('/home/pluto_sdr/Загрузки/ia-231/sdr/sdrLessons/src/rx_data.txt', 'r') as file:
     data = file.readlines()
 
 
 complex_numbers = []
 for line in data:
     x, y = map(float, line.strip().split(','))
+    x= x/(2**11)
+    y= y/(2**11)
     complex_numbers.append(complex(x, y))
 
 
-real_parts = [z.real for z in complex_numbers]
-imaginary_parts = [z.imag for z in complex_numbers]
+flt = np.ones(10)
+result = np.convolve(complex_numbers, flt, mode='full')
+real_parts = [z.real for z in result]
+imaginary_parts = [z.imag for z in result]
 
 
 plt.figure(figsize=(10, 10))

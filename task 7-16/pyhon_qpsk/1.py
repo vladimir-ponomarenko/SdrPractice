@@ -36,7 +36,7 @@ plt.figure(1)
 plt.scatter(x_bb.real,x_bb.imag)
 plt.show()
 
-with open('sdrLessons/src/myfile.h', 'w') as file:
+with open('/home/pluto_sdr/Загрузки/ia-231/sdr/sdrLessons/myfile.h', 'w') as file:
     file.write("#ifndef MYFILE_H\n")
     file.write("#define MYFILE_H\n\n")
     
