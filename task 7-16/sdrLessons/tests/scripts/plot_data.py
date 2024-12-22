@@ -188,25 +188,25 @@ for line in lines:
 
 # Преобразуем список в массив NumPy
 # rx_nothreads = np.array(data)
-# fig, axs = plt.subplots(2, 1, layout='constrained')
-# plt.figure(1)
-#axs[1].plot(count, np.abs(data),  color='grey')  # Используем scatter для диаграммы созвездия
-# axs[0].plot(count,(imag),color='red')  # Используем scatter для диаграммы созвездия
-# axs[0].plot(count,(real), color='blue')  # Используем scatter для диаграммы созвездия
-# plt.show()
+fig, axs = plt.subplots(2, 1, layout='constrained')
+plt.figure(1)
+axs[1].plot(count, np.abs(data),  color='grey')  # Используем scatter для диаграммы созвездия
+axs[0].plot(count,(imag),color='red')  # Используем scatter для диаграммы созвездия
+axs[0].plot(count,(real), color='blue')  # Используем scatter для диаграммы созвездия
+plt.show()
 # Вывод загруженных данных
 # print(rx_nothreads)
 start = 74000
 end = 78000
 filtered_i = real[start:end - 1]
 filtered_q = imag[start:end - 1]
-# fig, axs = plt.subplots(2, 1, layout='constrained')
-# # plt.figure(1)
-# #axs[1].plot(count, np.abs(data),  color='grey')  # Используем scatter для диаграммы созвездия
-# axs[0].plot(count[590000:598000 - 1],(filtered_q),color='red')  # Используем scatter для диаграммы созвездия
-# axs[0].plot(count[590000:598000 - 1],(filtered_i), color='blue')  # Используем scatter для диаграммы созвездия
+fig, axs = plt.subplots(2, 1, layout='constrained')
+# plt.figure(1)
+#axs[1].plot(count, np.abs(data),  color='grey')  # Используем scatter для диаграммы созвездия
+axs[0].plot(count[start:end - 1],(filtered_q),color='red')  # Используем scatter для диаграммы созвездия
+axs[0].plot(count[start:end - 1],(filtered_i), color='blue')  # Используем scatter для диаграммы созвездия
 
-# plt.show()
+plt.show()
 
 count_01 = 0
 rx_complex = []

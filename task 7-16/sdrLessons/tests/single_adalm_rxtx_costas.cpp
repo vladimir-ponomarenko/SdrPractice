@@ -15,6 +15,7 @@
 /* helper macros */
 #define MHZ(x) ((long long)(x*1000000.0 + .5))
 #define GHZ(x) ((long long)(x*1000000000.0 + .5))
+#define EXTRACT_12_BITS(val) ((val) & 0x0FFF)
 
 
 /* IIO structs required for streaming */
@@ -30,7 +31,27 @@ static struct iio_stream  *txstream = NULL;
 static struct iio_channels_mask *rxmask = NULL;
 static struct iio_channels_mask *txmask = NULL;
 
+// void process_rx_data(uint16_t **rx_buff, size_t sample_count, size_t channel_count)
+// {
+//     for (size_t i = 0; i < sample_count; i++)
+//     {
+//         for (size_t ch = 0; ch < channel_count; ch++)
+//         {
+//             uint16_t *buffer = rx_buff[i][ch];
 
+//             for (size_t j = 0; j < (rx_mtu / 2); j++)
+//             {
+//                 uint16_t I_value = buffer[2 * j];
+//                 uint16_t Q_value = buffer[2 * j + 1];
+
+//                 uint16_t I_12bit = EXTRACT_12_BITS(I_value);
+//                 uint16_t Q_12bit = EXTRACT_12_BITS(Q_value);
+
+//                 printf("Sample: %zu, Channel: %zu, I: %u, Q: %u\n", i, ch, I_12bit, Q_12bit);
+//             }
+//         }
+//     }
+// }
 
 /* cleanup and exit */
 static void shutdown(void)
