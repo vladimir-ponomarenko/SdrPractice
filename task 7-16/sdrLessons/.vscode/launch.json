@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "/home/fzybot/dev/sdrLessons/build/tests/soapy_pluto/soapy_pluto_sdr_timestamp",
+            "program": "/home/novosibirsk/dev/sdrLessons/build/tests/soapy_pluto/soapy_pluto_sdr_timestamp",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${fileDirname}",

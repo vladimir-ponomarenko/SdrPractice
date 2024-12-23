@@ -152,7 +152,7 @@ int main(){
     printf("* Enabling IIO streaming channels\n");
 	iio_channel_enable(rx0_i, rxmask);
 	iio_channel_enable(rx0_q, rxmask);
-	iio_channel_enable(tx0_i, txmask);      
+	iio_channel_enable(tx0_i, txmask);
 	iio_channel_enable(tx0_q, txmask);
 
     printf("* Creating non-cyclic IIO buffers with 1 MiS\n");

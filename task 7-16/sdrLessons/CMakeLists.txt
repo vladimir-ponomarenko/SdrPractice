@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(PlutoSDR CXX C)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # Опция для включения или отключения установки зависимостей
 option(INSTALL_DEPS "Установить зависимости" ON)
 option(UNIT_TESTS_ENABLED "Build unit tests" ON)

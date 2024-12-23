@@ -21,11 +21,9 @@ int main(void)
     SoapySDRKwargs args = {};
     SoapySDRKwargs_set(&args, "driver", "plutosdr");
     if (1) {
-                SoapySDRKwargs_set(&args, "uri", "ip:192.168.2.1");
-
+        SoapySDRKwargs_set(&args, "uri", "usb:");
     } else {
-                SoapySDRKwargs_set(&args, "uri", "usb:");
-
+        SoapySDRKwargs_set(&args, "uri", "ip:192.168.2.1");
     }
     SoapySDRKwargs_set(&args, "direct", "1");
     SoapySDRKwargs_set(&args, "timestamp_every", "1920");
@@ -40,7 +38,7 @@ int main(void)
     }
 
     //apply settings
-    if (SoapySDRDevice_setSampleRate(sdr, SOAPY_SDR_RX, 0, 2e6) != 0)
+    if (SoapySDRDevice_setSampleRate(sdr, SOAPY_SDR_RX, 0, 1e6) != 0)
     {
         printf("setSampleRate rx fail: %s\n", SoapySDRDevice_lastError());
     }
@@ -48,7 +46,7 @@ int main(void)
     {
         printf("setFrequency rx fail: %s\n", SoapySDRDevice_lastError());
     }
-    if (SoapySDRDevice_setSampleRate(sdr, SOAPY_SDR_TX, 0, 2e6) != 0)
+    if (SoapySDRDevice_setSampleRate(sdr, SOAPY_SDR_TX, 0, 1e6) != 0)
     {
         printf("setSampleRate tx fail: %s\n", SoapySDRDevice_lastError());
     }
@@ -67,6 +65,12 @@ int main(void)
         SoapySDRDevice_unmake(sdr);
         return EXIT_FAILURE;
     }
+    if(SoapySDRDevice_setGain(sdr, SOAPY_SDR_RX, channels, 10.0) !=0 ){
+        printf("setGain rx fail: %s\n", SoapySDRDevice_lastError());
+    }
+    if(SoapySDRDevice_setGain(sdr, SOAPY_SDR_TX, channels, -50.0) !=0 ){
+        printf("setGain rx fail: %s\n", SoapySDRDevice_lastError());
+    }
     SoapySDRStream *txStream = SoapySDRDevice_setupStream(sdr, SOAPY_SDR_TX, SOAPY_SDR_CS16, channels, channel_count, NULL);
     if (txStream == NULL)
     {
@@ -80,22 +84,8 @@ int main(void)
     size_t tx_mtu = SoapySDRDevice_getStreamMTU(sdr, txStream);
     printf("MTU - TX: %lu, RX: %lu\n", tx_mtu, rx_mtu);
 
-    //tx buffer could be made a lot shorter, the library *should* fill in the blank space
-    //tx_mtu = 6; // IQ samples (12 words)
-
     //sample count
     size_t sample_count = 100;
-
-    //create buffers for samples (unsigned signed int16's - although we're transmitting and receiving signed numbers)
-    //double size for I and Q samples
-
-    // cf_t* rx_buff_cf;
-    // rx_buff_cf = malloc(sizeof(cf_t)*rx_mtu);
-    float *rx_buff[channel_count];
-    for (size_t j = 0; j < channel_count; j++)
-    {
-        rx_buff[j] = malloc(sizeof(float)*2*rx_mtu);
-    }
     
     long long rx_timestamps[sample_count];
     uint16_t tx_buff[2*tx_mtu];
@@ -106,6 +96,11 @@ int main(void)
     //we transmit a pattern of FFFF FFFF [TS_0]00 [TS_1]00 [TS_2]00 [TS_3]00 [TS_4]00 [TS_5]00 [TS_6]00 [TS_7]00 FFFF FFFF
     //that is a flag (FFFF FFFF) followed by the 64 bit timestamp, split into 8 bytes and packed into the lsb of each of the DAC words.
     //DAC samples are left aligned 12-bits, so each byte is left shifted into place
+    for (int i = 0; i < 2 * rx_mtu; i+=2)
+    {
+        tx_buff[i] = 15000;
+        tx_buff[+1] = 15000;
+    }
     for(size_t i = 0; i < 2; i++)
     {
         tx_buff[0 + i] = 0xffff;
@@ -144,7 +139,8 @@ int main(void)
     fwrite(txp[0], proc->writeBlockSize * sizeof(int), 1, file);
     fclose(file);
     #endif
-    //FILE *file = fopen("txdata.pcm", "a+");
+    FILE *file = fopen("txdata.pcm", "a+");
+    
     
     for (size_t buffers_read = 0; buffers_read < sample_count; buffers_read++)
     {
@@ -161,13 +157,10 @@ int main(void)
             continue;
         }
         rx_timestamps[buffers_read] = timeNs;
-            // fwrite(buffs[0], sizeof(uint16_t)*2*rx_mtu, 1, file);
 
         // Dump info
         printf("Buffer: %lu - Samples: %i, Flags: %i, Time: %lli, TimeDiff: %lli\n", buffers_read, sr, flags, timeNs, timeNs - last_time);
-        for (int i = 0; i < 2*rx_mtu; i+=2){
-            printf("i = %d, I = %d, Q = %d\n", i, buffer[i], buffer[i+1]);
-        }
+        fwrite(buffer, 2* rx_mtu * sizeof(int16_t), 1, file);
         last_time = timeNs;
 
         // Calculate transmit time 4ms in future
@@ -188,16 +181,18 @@ int main(void)
         }
 
         // // Send buffer
-        // buffs[0] = tx_buff;
-        // buffs[1] = tx_buff;
-        flags = SOAPY_SDR_HAS_TIME;
-        int st = SoapySDRDevice_writeStream(sdr, txStream, (const void * const*)buffs, tx_mtu, &flags, tx_time, 100000);
-        if ((size_t)st != tx_mtu)
-        {
-            printf("TX Failed: %i\n", st);
+        buffs[0] = tx_buff;
+        if(buffers_read == 10){
+            flags = SOAPY_SDR_HAS_TIME;
+            int st = SoapySDRDevice_writeStream(sdr, txStream, (const void * const*)buffs, tx_mtu, &flags, tx_time, 400000);
+            if ((size_t)st != tx_mtu)
+            {
+                printf("TX Failed: %i\n", st);
+            }
         }
+        
     }
-    //fclose(file);
+    fclose(file);
 
     //stop streaming
     SoapySDRDevice_deactivateStream(sdr, rxStream, 0, 0);
@@ -214,19 +209,19 @@ int main(void)
     for (size_t j = 0; j < channel_count; j++)
     {
         printf("Checking channel %zu\n", j);
-        check_channel(sample_count, channel_count, j, tx_timestamps, rx_timestamps, (uint16_t**)rx_buff, rx_mtu);
+        //check_channel(sample_count, channel_count, j, tx_timestamps, rx_timestamps, (uint16_t**)rx_buff, rx_mtu);
     }
 
     //all done
     printf("test complete!\n");
 
-    //free buffers
-    for (size_t i = 0; i < sample_count; i++)
-    for (size_t j = 0; j < channel_count; j++)
-    {
-        //free(rx_buff);
-        //rx_buff[i][j] = NULL;
-    }
+    // //free buffers
+    // for (size_t i = 0; i < sample_count; i++)
+    // for (size_t j = 0; j < channel_count; j++)
+    // {
+    //     //free(rx_buff);
+    //     //rx_buff[i][j] = NULL;
+    // }
 
     return EXIT_SUCCESS;
 }

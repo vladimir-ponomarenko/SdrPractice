@@ -2,39 +2,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Открываем файл для чтения
-with open('txdata.pcm', 'r') as file:
-#with open('/build/tests/soapy_pluto/txdata.txt', 'r') as file:
-    # Читаем все строки из файла
-    lines = file.readlines()
+name = "/home/pluto_sdr/Загрузки/sdr/sdrLessons/build/tests/soapy_pluto/txdata.pcm"
 
-# Инициализируем список для хранения данных
 data = []
 imag = []
 real = []
 count = []
-
-
-# Обрабатываем каждую строку
-counter  = 0
-for line in lines:
-    line = line.strip()  # Убираем лишние пробелы
-    if line:  # Пропускаем пустые строки
-        try:
-            # Разделяем строку по запятой и преобразуем в числа
-            numbers = list(map(float, [value.strip() for value in line.split(',')]))
-            # Создаём комплексное число (I + jQ)
-            complex_number = complex(numbers[0], numbers[1])
-            data.append(complex_number)
-            imag.append(numbers[1])
-            real.append(numbers[0])
-            count.append(counter)
+counter = 0
+with open(name, "rb") as f:
+    index = 0
+    while (byte := f.read(2)):
+        if(index %2 == 0):
+            real.append(int.from_bytes(byte, byteorder='little', signed=True))
             counter += 1
-        except ValueError:
-            print(f"Ошибка преобразования строки: {line}")
+            count.append(counter)
+        else:
+            imag.append(int.from_bytes(byte, byteorder='little', signed=True))
+        index += 1
+        
+# Инициализируем список для хранения данных
 
-fig, axs = plt.subplots(2, 1, layout='constrained')
+
+# fig, axs = plt.subplots(2, 1, layout='constrained')
 plt.figure(1)
-axs[1].plot(count, np.abs(data),  color='grey')  # Используем scatter для диаграммы созвездия
-axs[0].plot(count,(imag),color='red')  # Используем scatter для диаграммы созвездия
-axs[0].plot(count,(real), color='blue')  # Используем scatter для диаграммы созвездия
+# axs[1].plot(count, np.abs(data),  color='grey')  # Используем scatter для диаграммы созвездия
+plt.plot(count,(imag),color='red')  # Используем scatter для диаграммы созвездия
+plt.plot(count,(real), color='blue')  # Используем scatter для диаграммы созвездия
 plt.show()
