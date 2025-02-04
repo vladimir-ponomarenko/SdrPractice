@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Открываем файл для чтения
-name = "/home/pluto_sdr/Загрузки/sdr/sdrLessons/build/tests/soapy_pluto/txdata.pcm"
+name = "/home/pluto_sdr/Загрузки/sdr/sdrLessons/build/tests/soapy_pluto/data2.bin"
 
 data = []
 imag = []

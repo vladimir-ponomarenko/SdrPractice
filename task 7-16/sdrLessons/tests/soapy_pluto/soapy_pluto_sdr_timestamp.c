@@ -99,7 +99,7 @@ int main(void)
     for (int i = 0; i < 2 * rx_mtu; i+=2)
     {
         tx_buff[i] = 15000;
-        tx_buff[+1] = 15000;
+        tx_buff[i+1] = 15000;
     }
     for(size_t i = 0; i < 2; i++)
     {
